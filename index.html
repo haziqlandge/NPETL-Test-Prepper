@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOC26 CS160 Week Quiz</title>
+<meta name="description" content="Practice and test yourself on the NOC26 CS160 weekly question sets.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%233d55c9'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..650&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ---------- Design tokens: 8pt spacing, one accent, warm-neutral greys ---------- */
+:root {
+  --bg: #f6f4f0; --surface: #ffffff; --surface-2: #faf8f5; --text: #1c1b19; --muted: #6f6b64; --line: #e6e2db; --line-strong: #d3cec5;
+  --accent: #3d55c9; --accent-hover: #3248b3; --accent-soft: #eaedfb; --accent-text: #ffffff;
+  --ok: #2c7a47; --ok-bg: #e7f4ec; --ok-line: #9fd0b0;
+  --bad: #b83a37; --bad-bg: #fbeceb; --bad-line: #e7a9a6;
+  --shadow-sm: 0 1px 2px rgba(60,48,30,.06);
+  --shadow-md: 0 1px 2px rgba(60,48,30,.05), 0 8px 24px -8px rgba(60,48,30,.12);
+  --shadow-lg: 0 24px 60px -16px rgba(40,32,20,.3);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 20px;
+  --s1: 4px; --s2: 8px; --s3: 16px; --s4: 24px; --s5: 32px; --s6: 48px; --s7: 64px;
+  --ease: cubic-bezier(.22,.8,.3,1);
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, Consolas, monospace;
+  --z-sticky: 10; --z-fab: 20;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131211; --surface: #1c1b19; --surface-2: #232220; --text: #eeebe5; --muted: #a09b92; --line: #2e2c29; --line-strong: #403d39;
+    --accent: #8197f5; --accent-hover: #97a9f8; --accent-soft: #232842; --accent-text: #10131f;
+    --ok: #6fcf93; --ok-bg: #18291f; --ok-line: #2f5a40;
+    --bad: #f08a86; --bad-bg: #2d1b1a; --bad-line: #6b3433;
+    --shadow-sm: none; --shadow-md: 0 8px 24px -8px rgba(0,0,0,.5); --shadow-lg: 0 24px 60px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131211; --surface: #1c1b19; --surface-2: #232220; --text: #eeebe5; --muted: #a09b92; --line: #2e2c29; --line-strong: #403d39;
+  --accent: #8197f5; --accent-hover: #97a9f8; --accent-soft: #232842; --accent-text: #10131f;
+  --ok: #6fcf93; --ok-bg: #18291f; --ok-line: #2f5a40;
+  --bad: #f08a86; --bad-bg: #2d1b1a; --bad-line: #6b3433;
+  --shadow-sm: none; --shadow-md: 0 8px 24px -8px rgba(0,0,0,.5); --shadow-lg: 0 24px 60px -16px rgba(0,0,0,.7);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 400 16px/1.6 var(--font-body); -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(900px 420px at 50% -120px, var(--accent-soft), transparent 70%);
+  background-repeat: no-repeat;
+}
+.wrap { max-width: 1160px; margin: 0 auto; padding: var(--s4) var(--s3) var(--s6); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+.skip { position: absolute; left: var(--s3); top: -48px; background: var(--accent); color: var(--accent-text); padding: var(--s2) var(--s3); border-radius: var(--r-sm); z-index: 100; transition: top .2s; }
+.skip:focus { top: var(--s3); }
+.muted { color: var(--muted); }
+
+/* ---------- Header ---------- */
+header.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s3); padding: var(--s3) 0 var(--s4); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; box-shadow: var(--shadow-md); }
+.brand-mark svg { width: 22px; height: 22px; }
+.brand h1 { font: 700 22px/1.1 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.brand p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+
+.tabs { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow-sm); }
+.tabs::before { content: ""; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: var(--accent); border-radius: 999px; transition: transform .35s var(--ease); }
+.tabs[data-mode="test"]::before { transform: translateX(100%); }
+.tabs button { position: relative; border: 0; background: transparent; color: var(--muted); padding: 8px 24px; font: 550 14px var(--font-body); border-radius: 999px; cursor: pointer; transition: color .25s; }
+.tabs button:hover { color: var(--text); }
+.tabs button.active { color: var(--accent-text); }
+
+.head-actions { display: flex; align-items: center; gap: var(--s2); }
+.theme-toggle { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; box-shadow: var(--shadow-sm); transition: border-color .2s, transform .15s var(--ease), background .2s; }
+.theme-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+.theme-toggle:active { transform: scale(.94); }
+.theme-toggle svg { width: 20px; height: 20px; }
+.theme-toggle .i-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+
+/* ---------- Two-column layout (uses wide screens) ---------- */
+.split { display: block; }
+.side-practice { display: none; }
+.week-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+.week-nav button { font: 550 14px var(--font-body); padding: 10px 0; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); cursor: pointer; transition: all .2s; font-variant-numeric: tabular-nums; }
+.week-nav button:hover { border-color: var(--accent); }
+.week-nav button.current { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.side-note { margin: var(--s3) 0 0; font-size: 13px; color: var(--muted); }
+.navpanel { display: none; }
+.qnav { display: grid; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 6px; }
+.qnav button { height: 36px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--muted); font: 600 12px var(--font-mono); cursor: pointer; transition: all .2s; }
+.qnav button:hover { border-color: var(--accent); color: var(--text); }
+.qnav button.answered { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.qnav button.ok { background: var(--ok-bg); border-color: var(--ok-line); color: var(--ok); }
+.qnav button.bad { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad); }
+.legend { display: flex; gap: var(--s3); margin-top: var(--s3); font-size: 12px; color: var(--muted); }
+.legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--line-strong); margin-right: 6px; }
+.legend .dot.a { background: var(--accent-soft); border-color: var(--accent); }
+.card { scroll-margin-top: 96px; }
+@media (min-width: 1024px) {
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--s5); align-items: start; }
+  .main-col { grid-column: 1; grid-row: 1; min-width: 0; }
+  .side { grid-column: 2; grid-row: 1; position: sticky; top: var(--s3); display: flex; flex-direction: column; gap: var(--s3); max-height: calc(100dvh - 32px); overflow-y: auto; scrollbar-width: thin; }
+  .side .panel, .side .tracker { margin: 0; }
+  .side .tracker { position: static; backdrop-filter: none; background: var(--surface); }
+  .side-practice, .navpanel { display: block; }
+  label.select { display: none; }
+  .qtext { font-size: 19px; }
+}
+@media (max-width: 1023px) {
+  #test .side { display: contents; }
+  #test .panel { margin-bottom: var(--s3); }
+  #test .tracker { margin-bottom: var(--s3); }
+}
+
+/* ---------- Buttons & controls ---------- */
+.btn, select {
+  font: 550 14px/1 var(--font-body); color: var(--text); background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 12px 16px; min-height: 44px; cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s var(--ease), box-shadow .2s;
+  box-shadow: var(--shadow-sm);
+}
+.btn:hover:not(:disabled), select:hover { border-color: var(--accent); background: var(--surface-2); }
+.btn:active:not(:disabled) { transform: translateY(1px) scale(.98); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn.ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--muted); }
+.btn.ghost:hover:not(:disabled) { color: var(--text); background: var(--surface); border-color: var(--line); }
+.btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+label.select { display: flex; align-items: center; gap: var(--s2); font-size: 14px; color: var(--muted); }
+select { appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236f6b64' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; color: var(--text); }
+
+/* ---------- Section intro ---------- */
+.section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s4); }
+.section-head h2 { font: 700 clamp(28px, 5vw, 40px)/1.05 var(--font-display); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
+.section-head .sub { margin: var(--s2) 0 0; color: var(--muted); font-size: 15px; max-width: 46ch; }
+.progress { height: 4px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: var(--s4); }
+.progress > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: inherit; transition: width .5s var(--ease); }
+
+/* ---------- Question card ---------- */
+.card {
+  position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: var(--s4); margin-bottom: var(--s3); box-shadow: var(--shadow-md);
+}
+.card .q { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 16px; align-items: start; margin-bottom: var(--s3); }
+.qnum { font: 600 13px/1 var(--font-mono); color: var(--accent); background: var(--accent-soft); padding: 8px 10px; border-radius: 10px; margin-top: 2px; }
+.qtext { font: 600 18px/1.45 var(--font-body); letter-spacing: -.01em; text-wrap: pretty; max-width: 62ch; }
+.qmeta { font-size: 12px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+.opts { display: grid; gap: var(--s2); }
+
+.opt {
+  display: flex; align-items: flex-start; gap: 12px; width: 100%; text-align: left; padding: 12px 16px; margin: 0;
+  border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); color: var(--text); font: 450 15.5px/1.5 var(--font-body);
+  transition: border-color .2s, background .2s, transform .15s var(--ease), box-shadow .2s;
+}
+button.opt { cursor: pointer; }
+button.opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); transform: translateX(2px); }
+button.opt:active:not(:disabled) { transform: scale(.99); }
+button.opt:disabled { cursor: default; }
+.opt .letter { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-strong); font: 600 12.5px var(--font-mono); color: var(--muted); transition: all .2s; }
+.opt .otext { padding-top: 2px; }
+.opt.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
+.opt.selected .letter { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.opt.correct { border-color: var(--ok-line); background: var(--ok-bg); box-shadow: none; }
+.opt.correct .letter { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.opt.wrong { border-color: var(--bad-line); background: var(--bad-bg); box-shadow: none; }
+.opt.wrong .letter { background: var(--bad); border-color: var(--bad); color: var(--surface); }
+
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s3); }
+.answer { color: var(--ok); font-weight: 600; font-size: 14px; }
+.mark { font: 600 12px var(--font-body); padding: 4px 10px; border-radius: 6px; letter-spacing: .02em; white-space: nowrap; }
+.mark.ok { background: var(--ok-bg); color: var(--ok); }
+.mark.bad { background: var(--bad-bg); color: var(--bad); }
+.fix { margin-top: var(--s3); padding: 12px 16px; border-left: 3px solid var(--ok); background: var(--ok-bg); border-radius: 4px var(--r-sm) var(--r-sm) 4px; font-size: 14.5px; }
+
+/* ---------- Test controls ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s3) var(--s4); margin-bottom: var(--s4); box-shadow: var(--shadow-sm); }
+.panel h3 { font: 600 12px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+.week-picks { display: flex; flex-wrap: wrap; gap: var(--s2); width: 100%; }
+.week-picks label { position: relative; border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px; cursor: pointer; background: var(--surface-2); font-size: 14px; font-weight: 500; transition: all .2s; user-select: none; }
+.week-picks label:hover { border-color: var(--accent); }
+.week-picks input { position: absolute; opacity: 0; inset: 0; cursor: pointer; margin: 0; }
+.week-picks label:has(input:checked) { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.week-picks label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; justify-content: space-between; }
+.panel .toolbar { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--line); }
+.actions { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
+.count-pill { font: 500 13px var(--font-mono); color: var(--muted); }
+
+.sticky { position: sticky; top: var(--s2); z-index: var(--z-sticky); background: color-mix(in srgb, var(--surface) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 12px 16px; margin-bottom: var(--s3); box-shadow: var(--shadow-md); display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; justify-content: space-between; }
+.sticky strong { font: 700 18px var(--font-display); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.tracker { display: block; padding: 12px 16px 14px; }
+.tracker-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.tracker-label { font: 600 12px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tracker .progress { margin: 0; height: 6px; }
+.tracker strong { font: 700 16px var(--font-display); }
+.chip { font: 550 13px var(--font-body); border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px; min-height: 36px; background: var(--surface); color: var(--text); cursor: pointer; transition: all .2s; font-variant-numeric: tabular-nums; }
+.chip:hover { border-color: var(--accent); }
+.chip.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.chip.ok { color: var(--ok); }
+.chip.bad { color: var(--bad); }
+.chip.active.ok, .chip.active.bad { color: var(--accent-text); }
+
+.empty { color: var(--muted); text-align: center; padding: var(--s6) var(--s4); border: 1.5px dashed var(--line-strong); border-radius: var(--r-lg); background: var(--surface-2); }
+.empty b { display: block; font: 700 20px var(--font-display); color: var(--text); margin-bottom: 4px; }
+
+.pager { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); margin: var(--s5) 0 var(--s7); }
+.pager span { color: var(--muted); font: 500 13px var(--font-mono); }
+.submit-row { display: flex; justify-content: center; margin: var(--s5) 0 var(--s7); }
+.submit-row .btn { padding: 16px 48px; font-size: 16px; border-radius: 999px; }
+.retry { position: fixed; right: var(--s3); bottom: var(--s3); z-index: var(--z-fab); border-radius: 999px; padding: 14px 24px; box-shadow: var(--shadow-lg); }
+
+/* ---------- Dialog ---------- */
+dialog { background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 24px; width: min(420px, calc(100% - 32px)); padding: var(--s5); text-align: center; box-shadow: var(--shadow-lg); }
+dialog[open] { animation: pop .4s var(--ease); }
+dialog::backdrop { background: rgba(20,16,10,.5); backdrop-filter: blur(4px); }
+dialog h2 { font: 600 12px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0; }
+dialog .big { font: 800 64px/1 var(--font-display); letter-spacing: -.04em; margin: var(--s3) 0 var(--s1); font-variant-numeric: tabular-nums; }
+dialog #scorePct { font: 600 18px var(--font-body); color: var(--accent); margin: 0 0 var(--s2); }
+dialog .row { justify-content: center; margin-top: var(--s4); }
+@keyframes pop { from { opacity: 0; transform: translateY(12px) scale(.96); } }
+
+@media (max-width: 600px) {
+  .wrap { padding: var(--s3) 16px var(--s6); }
+  .card { padding: var(--s3); border-radius: var(--r-md); }
+  .qtext { font-size: 17px; }
+  .card .q { grid-template-columns: auto 1fr; }
+  .card .q .mark { grid-column: 2; justify-self: start; }
+  .panel { padding: var(--s3); }
+  .pager { flex-wrap: wrap; }
+  .pager .btn { flex: 1; }
+  .pager span { order: -1; width: 100%; text-align: center; }
+  .head-actions { width: 100%; } .tabs { flex: 1; } .tabs button { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l5 5 9-11"/></svg></div>
+      <div><h1>NOC26 CS160</h1><p>Weekly question bank</p></div>
+    </div>
+    <div class="head-actions">
+      <div class="tabs" role="tablist" data-mode="practice" id="tabs">
+        <button id="tabPractice" class="active" data-mode="practice" role="tab">Practice</button>
+        <button id="tabTest" data-mode="test" role="tab">Test</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Toggle light / dark">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- PRACTICE -->
+  <section id="practice">
+    <div class="section-head">
+      <div>
+        <h2 id="weekTitle">Week 1</h2>
+        <p class="sub">Read each question, then reveal the answer when you are ready.</p>
+      </div>
+      <label class="select">Jump to
+        <select id="weekJump"></select>
+      </label>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="weekBar"></i></div>
+    <div class="split">
+      <aside class="side side-practice" aria-label="Weeks">
+        <div class="panel">
+          <h3>Weeks</h3>
+          <div class="week-nav" id="weekList"></div>
+          <p class="side-note" id="revealNote"></p>
+        </div>
+      </aside>
+      <div class="main-col">
+        <div id="practiceList"></div>
+        <div class="pager">
+          <button class="btn" id="prevWeek">&larr; Previous week</button>
+          <span id="weekLabel"></span>
+          <button class="btn" id="nextWeek">Next week &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section id="test" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Build a test</h2>
+        <p class="sub">Choose the weeks to include, answer, then submit for your score.</p>
+      </div>
+    </div>
+    <div class="split">
+      <aside class="side">
+        <div class="panel">
+          <h3>Weeks</h3>
+          <div class="week-picks" id="weekPicks"></div>
+          <div class="toolbar">
+            <div class="actions">
+              <button class="btn" id="randomBtn">Shuffle</button>
+              <button class="btn ghost" id="resetBtn">Reset order</button>
+              <button class="btn ghost" id="clearBtn">Clear weeks</button>
+            </div>
+          </div>
+        </div>
+        <div id="tracker" class="sticky tracker" role="status" aria-live="polite">
+          <div class="tracker-top">
+            <span class="tracker-label">Progress</span>
+            <strong id="testCount"></strong>
+          </div>
+          <div class="progress" aria-hidden="true"><i id="testBar"></i></div>
+        </div>
+        <div class="panel navpanel" id="navPanel">
+          <h3>Questions</h3>
+          <div class="qnav" id="qNav"></div>
+          <div class="legend"><span><i class="dot"></i>Unanswered</span><span><i class="dot a"></i>Answered</span></div>
+        </div>
+      </aside>
+      <div class="main-col">
+        <div id="resultBar" class="sticky" hidden>
+          <strong id="barScore"></strong>
+          <div class="actions">
+            <button class="chip active" data-action="filter" data-filter="all">All <span id="cAll"></span></button>
+            <button class="chip ok" data-action="filter" data-filter="correct">&check; Correct <span id="cOk"></span></button>
+            <button class="chip bad" data-action="filter" data-filter="incorrect">&cross; Incorrect <span id="cBad"></span></button>
+          </div>
+        </div>
+        <div id="testList"></div>
+        <div class="submit-row">
+          <button class="btn primary" id="submitBtn">Submit test</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+</div>
+
+<button class="btn primary retry" id="retryBtn" hidden>Retry</button>
+
+<dialog id="scoreModal">
+  <h2>Score card</h2>
+  <p class="big" id="scoreText"></p>
+  <p id="scorePct"></p>
+  <p class="muted" id="scoreNote"></p>
+  <div class="row"><button class="btn primary" id="scoreClose">Review answers</button></div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="data.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const LETTERS = 'ABCDEFGH';
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+
+// Build lookup tables from QNA_DATA (data.js)
+const WEEK_NUMS = QNA_DATA.map(w => w.week);
+const WEEK_KEYS = {};
+const BY_KEY = {};
+QNA_DATA.forEach(w => {
+  WEEK_KEYS[w.week] = [];
+  w.questions.forEach(q => {
+    const key = `${w.week}-${q.n}`;
+    const correctOpt = q.options.find(o => o.letter === q.correct);
+    const original = q.options.map(o => ({ letter: o.letter, text: o.text }));
+    BY_KEY[key] = {
+      key, week: w.week, n: q.n, text: q.text,
+      original,
+      options: original.map(o => ({ ...o })),
+      correctText: correctOpt ? correctOpt.text : '',
+      correctLetter: q.correct
+    };
+    WEEK_KEYS[w.week].push(key);
+  });
+});
+
+const state = {
+  mode: 'practice',
+  week: WEEK_NUMS[0],
+  picked: new Set([WEEK_NUMS[0]]),
+  order: [],
+  answers: {},
+  submitted: false,
+  filter: 'all',
+  revealed: {}
+};
+
+const orderFromPicks = () => WEEK_NUMS.filter(w => state.picked.has(w)).flatMap(w => WEEK_KEYS[w]);
+const unjumbleAll = () => Object.values(BY_KEY).forEach(q => { q.options = q.original.map(o => ({ ...o })); });
+const isCorrect = k => state.answers[k] === BY_KEY[k].correctText;
+
+/* ---------- PRACTICE ---------- */
+function renderPractice() {
+  $('#weekJump').value = state.week;
+  const i = WEEK_NUMS.indexOf(state.week);
+  $('#weekLabel').textContent = `Week ${state.week} of ${WEEK_NUMS.length}`;
+  $('#weekTitle').textContent = `Week ${state.week}`;
+  $('#weekList').innerHTML = WEEK_NUMS.map(w => `<button class="${w === state.week ? 'current' : ''}" data-action="week" data-week="${w}">${w}</button>`).join('');
+  const nShown = WEEK_KEYS[state.week].filter(k => state.revealed[k]).length;
+  $('#revealNote').textContent = `${nShown} of ${WEEK_KEYS[state.week].length} answers revealed this week`;
+  $('#weekBar').style.width = `${(i + 1) / WEEK_NUMS.length * 100}%`;
+  $('#prevWeek').disabled = i === 0;
+  $('#nextWeek').disabled = i === WEEK_NUMS.length - 1;
+  $('#practiceList').innerHTML = WEEK_KEYS[state.week].map(k => practiceCard(BY_KEY[k])).join('');
+}
+
+function practiceCard(q) {
+  const shown = !!state.revealed[q.key];
+  return `<article class="card">
+    <div class="q"><span class="qnum">Q${q.n}</span><div class="qtext">${esc(q.text)}</div></div>
+    <div class="opts">${q.original.map(o => `<div class="opt ${shown && o.text === q.correctText ? 'correct' : ''}"><span class="letter">${o.letter}</span><span class="otext">${esc(o.text)}</span></div>`).join('')}</div>
+    <div class="row">
+      <button class="btn" data-action="reveal" data-key="${q.key}">${shown ? 'Hide answer' : 'Show answer'}</button>
+      ${shown ? `<span class="answer">&check; Correct answer: ${q.correctLetter}</span>` : ''}
+    </div>
+  </article>`;
+}
+
+/* ---------- TEST ---------- */
+function visibleKeys() {
+  return state.order.filter(k => {
+    if (!state.submitted || state.filter === 'all') return true;
+    return state.filter === 'correct' ? isCorrect(k) : !isCorrect(k);
+  });
+}
+
+function renderTest() {
+  const total = state.order.length;
+  const correct = state.order.filter(isCorrect).length;
+  const keys = visibleKeys();
+
+  const answered = state.order.filter(k => k in state.answers).length;
+  $('#navPanel').hidden = total === 0;
+  $('#qNav').innerHTML = state.order.map((k, i) => {
+    const cls = state.submitted ? (isCorrect(k) ? 'ok' : 'bad') : (k in state.answers ? 'answered' : '');
+    return `<button class="${cls}" data-action="goto" data-key="${k}" aria-label="Go to question ${i + 1}">${i + 1}</button>`;
+  }).join('');
+  $('#testCount').textContent = `${answered} / ${total} answered`;
+  $('#tracker').hidden = state.submitted || total === 0;
+  $('#testBar').style.width = total ? `${answered / total * 100}%` : '0%';
+  $('#testList').innerHTML = keys.length
+    ? keys.map(k => testCard(BY_KEY[k])).join('')
+    : `<div class="empty"><b>${total === 0 ? 'No weeks selected' : (state.filter === 'incorrect' ? 'No incorrect answers' : 'Nothing to show')}</b>${total === 0 ? 'Select at least one week above to build a test.' : (state.filter === 'incorrect' ? 'Every answer in this set was correct.' : 'Try a different filter.')}</div>`;
+
+  $('#submitBtn').disabled = state.submitted || total === 0;
+  $('#resultBar').hidden = !state.submitted;
+  $('#retryBtn').hidden = !state.submitted;
+  if (state.submitted) {
+    $('#barScore').textContent = `Score: ${correct} / ${total}`;
+    $('#cAll').textContent = `(${total})`;
+    $('#cOk').textContent = `(${correct})`;
+    $('#cBad').textContent = `(${total - correct})`;
+    document.querySelectorAll('[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === state.filter));
+  }
+}
+
+function testCard(q) {
+  const chosen = state.answers[q.key];
+  const done = state.submitted;
+  const ok = done && isCorrect(q.key);
+  const displayLetter = q.options.find(o => o.text === q.correctText)?.letter ?? q.correctLetter;
+  const mark = done ? `<span class="mark ${ok ? 'ok' : 'bad'}">${ok ? '✓ Correct' : '✗ Incorrect'}</span>` : '';
+  const opts = q.options.map(o => {
+    let cls = '';
+    if (chosen === o.text) cls += ' selected';
+    if (done) {
+      if (o.text === q.correctText) cls += ' correct';
+      else if (chosen === o.text) cls += ' wrong';
+    }
+    return `<button class="opt${cls}" data-action="pick" data-key="${q.key}" data-text="${esc(o.text)}" ${done ? 'disabled' : ''}>
+      <span class="letter">${o.letter}</span><span class="otext">${esc(o.text)}</span></button>`;
+  }).join('');
+  const fix = done && !ok ? `<div class="fix">Correct answer: <strong>${displayLetter}</strong> &middot; ${esc(q.correctText)}</div>` : '';
+  return `<article class="card" id="q-${q.key}">
+    <div class="q"><span class="qnum">Q${q.n}</span><div><div class="qtext">${esc(q.text)}</div><div class="qmeta">Week ${q.week}</div></div>${mark}</div>
+    <div class="opts">${opts}</div>
+    ${fix}
+  </article>`;
+}
+
+function renderPicks() {
+  $('#weekPicks').innerHTML = WEEK_NUMS.map(w => `<label><input type="checkbox" value="${w}" ${state.picked.has(w) ? 'checked' : ''}> Week ${w}</label>`).join('');
+}
+
+function restartTest() {
+  unjumbleAll();
+  state.order = orderFromPicks();
+  state.answers = {};
+  state.submitted = false;
+  state.filter = 'all';
+  renderTest();
+  animateIn('#testList');
+}
+
+function submitTest() {
+  state.submitted = true;
+  state.filter = 'all';
+  const total = state.order.length;
+  const correct = state.order.filter(isCorrect).length;
+  const unanswered = state.order.filter(k => !(k in state.answers)).length;
+  $('#scoreText').textContent = `${correct} / ${total}`;
+  $('#scorePct').textContent = `${total ? Math.round(correct / total * 100) : 0}%`;
+  $('#scoreNote').textContent = unanswered
+    ? `${unanswered} question(s) were left unanswered and count as incorrect.`
+    : 'All questions answered.';
+  renderTest();
+  $('#scoreModal').showModal();
+}
+
+/* ---------- MODE SWITCH ---------- */
+function setMode(mode) {
+  state.mode = mode;
+  $('#tabs').dataset.mode = mode;
+  document.querySelectorAll('.tabs button').forEach(b => { b.classList.toggle('active', b.dataset.mode === mode); b.setAttribute('aria-selected', b.dataset.mode === mode); });
+  $('#practice').hidden = mode !== 'practice';
+  $('#test').hidden = mode !== 'test';
+  if (mode === 'practice') renderPractice(); else renderTest();
+  window.scrollTo(0, 0);
+  animateIn(mode === 'practice' ? '#practiceList' : '#testList');
+}
+
+/* Staggered entrance for freshly loaded question lists (skipped if anime.js is unavailable) */
+function animateIn(sel) {
+  if (typeof anime === 'undefined' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  anime({ targets: `${sel} .card`.split(',').map(x => x).join(','), opacity: [0, 1], translateY: [16, 0], duration: 500, easing: 'easeOutCubic', delay: anime.stagger(40, { start: 0 }) });
+}
+
+/* ---------- EVENTS ---------- */
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+$('#weekJump').innerHTML = WEEK_NUMS.map(w => `<option value="${w}">Week ${w}</option>`).join('');
+$('#weekJump').addEventListener('change', e => { state.week = Number(e.target.value); renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList'); });
+$('#prevWeek').addEventListener('click', () => { state.week = WEEK_NUMS[WEEK_NUMS.indexOf(state.week) - 1]; renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList'); });
+$('#nextWeek').addEventListener('click', () => { state.week = WEEK_NUMS[WEEK_NUMS.indexOf(state.week) + 1]; renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList'); });
+
+$('#weekPicks').addEventListener('change', e => {
+  const w = Number(e.target.value);
+  if (e.target.checked) state.picked.add(w); else state.picked.delete(w);
+  restartTest();
+});
+
+$('#randomBtn').addEventListener('click', () => {
+  state.order = shuffle(state.order);
+  state.order.forEach(k => {
+    const q = BY_KEY[k];
+    q.options = shuffle(q.original).map((o, i) => ({ letter: LETTERS[i], text: o.text }));
+  });
+  renderTest();
+});
+
+$('#resetBtn').addEventListener('click', () => {
+  unjumbleAll();
+  state.order = orderFromPicks();
+  renderTest();
+});
+
+$('#clearBtn').addEventListener('click', () => {
+  state.picked = new Set([WEEK_NUMS[0]]);
+  renderPicks();
+  restartTest();
+});
+
+$('#submitBtn').addEventListener('click', submitTest);
+$('#retryBtn').addEventListener('click', () => {
+  state.answers = {};
+  state.submitted = false;
+  state.filter = 'all';
+  renderTest();
+  window.scrollTo(0, 0);
+});
+$('#scoreClose').addEventListener('click', () => $('#scoreModal').close());
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  if (action === 'reveal') {
+    state.revealed[btn.dataset.key] = !state.revealed[btn.dataset.key];
+    renderPractice();
+  } else if (action === 'pick') {
+    if (state.submitted) return;
+    state.answers[btn.dataset.key] = btn.dataset.text;
+    renderTest();
+  } else if (action === 'goto') {
+    const el = document.getElementById('q-' + btn.dataset.key);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (action === 'week') {
+    state.week = Number(btn.dataset.week); renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList');
+  } else if (action === 'filter') {
+    state.filter = btn.dataset.filter;
+    renderTest();
+  }
+});
+
+/* ---------- THEME ---------- */
+const root = document.documentElement;
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(t) {
+  root.dataset.theme = t;
+  $('#themeToggle').setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+}
+let savedTheme = null;
+try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+applyTheme(savedTheme || (systemDark.matches ? 'dark' : 'light'));
+$('#themeToggle').addEventListener('click', () => {
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('theme', next); } catch (e) {}
+});
+
+/* ---------- INIT ---------- */
+renderPicks();
+state.order = orderFromPicks();
+renderPractice();
+renderTest();
+</script>
+</body>
+</html>
