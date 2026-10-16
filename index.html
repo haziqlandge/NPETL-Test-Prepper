@@ -97,8 +97,8 @@ header.top { display: flex; flex-wrap: wrap; justify-content: space-between; ali
 .qnav button { height: 36px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--muted); font: 600 12px var(--font-mono); cursor: pointer; transition: all .2s; }
 .qnav button:hover { border-color: var(--accent); color: var(--text); }
 .qnav button.answered { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-.qnav button.ok { background: var(--ok-bg); border-color: var(--ok-line); color: var(--ok); }
-.qnav button.bad { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad); }
+.qnav button.ok { background: #238348; border-color: #238348; color: #fff; }
+.qnav button.bad { background: #c42643; border-color: #c42643; color: #fff; }
 .legend { display: flex; gap: var(--s3); margin-top: var(--s3); font-size: 12px; color: var(--muted); }
 .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--line-strong); margin-right: 6px; }
 .legend .dot.a { background: var(--accent-soft); border-color: var(--accent); }
@@ -222,6 +222,13 @@ button.opt:disabled { cursor: default; }
 .mock-buttons .btn { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); width: 100%; }
 .mock-buttons .best { font: 500 12px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .mock-buttons .best.done { color: var(--ok); }
+.mock-week.completed, .mock-buttons .btn.completed { background: var(--ok-bg); border-color: var(--ok-line); }
+.mock-week.perfect { background: #238348; border-color: #238348; color: #fff; }
+.mock-week.perfect .muted { color: #fff; }
+.mock-buttons .btn.perfect { background: #238348; border-color: #238348; color: #fff; }
+.mock-buttons .btn.perfect .best { color: #fff; }
+.mock-buttons .best { text-align: right; white-space: normal; }
+.mock-save-note { margin: var(--s2) 0 0; font-size: 13px; color: var(--muted); }
 .mock-run-head { display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: flex-end; }
 .retry { position: fixed; right: var(--s3); bottom: var(--s3); z-index: var(--z-fab); border-radius: 999px; padding: 14px 24px; box-shadow: var(--shadow-lg); }
 
@@ -360,7 +367,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
       <div class="section-head">
         <div>
           <h2>Mock tests</h2>
-          <p class="sub">Three unique mock exams for every week. Sit a mock, submit it, and your best score is remembered on this device.</p>
+          <p class="sub">Three unique mock exams for every week. Answers and submitted results are saved in this browser. Resume a mock anytime. Green means full marks; light green means completed.</p>
         </div>
       </div>
       <div class="mock-grid" id="mockGrid"></div>
@@ -370,6 +377,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
         <div>
           <h2 id="mockTitle">Mock</h2>
           <p class="sub" id="mockSub"></p>
+          <p class="mock-save-note" id="mockSaveStatus" role="status" aria-live="polite"></p>
         </div>
         <div class="mock-run-head">
           <button class="btn ghost" id="mockBack" type="button">&larr; All mocks</button>
@@ -582,6 +590,7 @@ function submitTest() {
 /* ---------- MODE SWITCH ---------- */
 function setMode(mode) {
   state.mode = mode;
+  saveMockView(mode);
   $('#tabs').dataset.mode = mode;
   document.querySelectorAll('.tabs button').forEach(b => { b.classList.toggle('active', b.dataset.mode === mode); b.setAttribute('aria-selected', b.dataset.mode === mode); });
   $('#practice').hidden = mode !== 'practice';
@@ -672,6 +681,7 @@ document.addEventListener('click', e => {
   } else if (action === 'mock-pick') {
     if (mockState.submitted) return;
     mockState.answers[btn.dataset.key] = btn.dataset.text;
+    saveMockAttempt();
     renderMock();
   }
 });
@@ -681,6 +691,7 @@ $('#mockSubmit').addEventListener('click', submitMock);
 $('#mockRetry').addEventListener('click', () => {
   mockState.answers = {};
   mockState.submitted = false;
+  saveMockAttempt();
   renderMock();
   window.scrollTo(0, 0);
 });
@@ -702,38 +713,90 @@ MOCK_DATA.forEach(w => w.mocks.forEach(m => {
 
 const mockState = { id: null, answers: {}, submitted: false };
 
-// Best score per mock is a per-viewer convenience, so it lives in localStorage and every access is guarded.
+// Keep existing best scores separate from the current attempt so retries never erase them.
+function readMockStorage(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (e) { return fallback; }
+}
+function writeMockStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (e) { return false; }
+}
 function loadBest() {
-  try { return JSON.parse(localStorage.getItem('mockBest')) || {}; } catch (e) { return {}; }
+  const saved = readMockStorage('mockBest', {});
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {};
+  return Object.fromEntries(Object.entries(saved).filter(([id, b]) =>
+    MOCK_SETS[id] && b && Number.isInteger(b.score) && b.score >= 0 &&
+    b.total === MOCK_SETS[id].keys.length && b.score <= b.total));
 }
-function saveBest(best) {
-  try { localStorage.setItem('mockBest', JSON.stringify(best)); } catch (e) {}
+function loadMockAttempt(id) {
+  const saved = readMockStorage(`mockAttempt:${id}`, null);
+  const answers = {};
+  if (saved && saved.answers && typeof saved.answers === 'object') {
+    MOCK_SETS[id].keys.forEach(key => {
+      if (MOCK_BY_KEY[key].options.some(o => o.text === saved.answers[key])) answers[key] = saved.answers[key];
+    });
+  }
+  return { answers, submitted: saved?.submitted === true };
 }
-
+function mockSaveMessage(saved) {
+  $('#mockSaveStatus').textContent = saved
+    ? 'Saved in this browser. You can leave and resume anytime.'
+    : 'This browser could not save progress. Keep this page open to retain your answers.';
+}
+function saveMockView(view) {
+  writeMockStorage('quizView', view);
+}
+function saveMockAttempt() {
+  const saved = writeMockStorage(`mockAttempt:${mockState.id}`, {
+    answers: mockState.answers, submitted: mockState.submitted
+  });
+  mockSaveMessage(saved);
+  return saved;
+}
 function renderMockHome() {
   const best = loadBest();
+  saveMockView('mock');
   $('#mockHome').hidden = false;
   $('#mockRun').hidden = true;
-  $('#mockGrid').innerHTML = MOCK_DATA.map(w => `<article class="card mock-week">
-      <h3>Week ${w.week}</h3>
-      <p class="muted">${w.mocks.length} mocks &middot; ${w.mocks[0] ? w.mocks[0].questions.length : 0} questions each</p>
+  $('#mockGrid').innerHTML = MOCK_DATA.map(w => {
+    const completed = w.mocks.filter(m => best[`${w.week}-${m.mock}`]).length;
+    const perfect = w.mocks.every(m => {
+      const b = best[`${w.week}-${m.mock}`];
+      return b && b.score === b.total;
+    });
+    return `<article class="card mock-week${completed ? ' completed' : ''}${perfect ? ' perfect' : ''}">
+      <h3>Week ${w.week}${perfect ? ' · Full marks' : ''}</h3>
+      <p class="muted">${completed} / ${w.mocks.length} completed &middot; ${w.mocks[0]?.questions.length || 0} questions each</p>
       <div class="mock-buttons">${w.mocks.map(m => {
         const id = `${w.week}-${m.mock}`;
         const b = best[id];
-        return `<button class="btn" data-action="mock-open" data-id="${id}">Mock ${m.mock}<span class="best ${b ? 'done' : ''}">${b ? `Best ${b.score} / ${b.total}` : 'Not attempted'}</span></button>`;
+        const attempt = loadMockAttempt(id);
+        const answered = Object.keys(attempt.answers).length;
+        const resume = !attempt.submitted && answered > 0;
+        const full = b && b.score === b.total;
+        const label = [resume ? `Resume ${answered} / ${m.questions.length}` : '',
+          b ? `Completed · Best ${b.score} / ${b.total}` : (resume ? '' : 'Not attempted')].filter(Boolean).join(' · ');
+        return `<button class="btn${b ? ' completed' : ''}${full ? ' perfect' : ''}" data-action="mock-open" data-id="${id}">Mock ${m.mock}<span class="best ${b ? 'done' : ''}">${label}</span></button>`;
       }).join('')}</div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
 }
 
 function openMock(id) {
   const set = MOCK_SETS[id];
+  if (!set) return;
+  const saved = loadMockAttempt(id);
   mockState.id = id;
-  mockState.answers = {};
-  mockState.submitted = false;
+  mockState.answers = saved.answers;
+  mockState.submitted = saved.submitted;
+  saveMockView(`mock:${id}`);
   $('#mockHome').hidden = true;
   $('#mockRun').hidden = false;
   $('#mockTitle').textContent = `Week ${set.week} · Mock ${set.mock}`;
   $('#mockSub').textContent = `${set.keys.length} questions. Pick one answer per question, then submit.`;
+  saveMockAttempt();
   renderMock();
   window.scrollTo(0, 0);
   animateIn('#mockList');
@@ -792,11 +855,13 @@ function renderMock() {
 function submitMock() {
   const { correct, answered, total } = mockScore();
   mockState.submitted = true;
+  const attemptSaved = saveMockAttempt();
   const best = loadBest();
   const prev = best[mockState.id];
   if (!prev || correct > prev.score) {
     best[mockState.id] = { score: correct, total };
-    saveBest(best);
+    const bestSaved = writeMockStorage('mockBest', best);
+    mockSaveMessage(attemptSaved && bestSaved);
   }
   renderMock();
   $('#scoreText').textContent = `${correct} / ${total}`;
@@ -828,6 +893,13 @@ renderPicks();
 state.order = orderFromPicks();
 renderPractice();
 renderTest();
+const savedView = readMockStorage('quizView', 'practice');
+if (typeof savedView === 'string' && savedView.startsWith('mock:') && MOCK_SETS[savedView.slice(5)]) {
+  setMode('mock');
+  openMock(savedView.slice(5));
+} else if (savedView === 'mock' || savedView === 'test') {
+  setMode(savedView);
+}
 </script>
 </body>
 </html>
