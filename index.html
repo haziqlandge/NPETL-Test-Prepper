@@ -67,9 +67,10 @@ header.top { display: flex; flex-wrap: wrap; justify-content: space-between; ali
 .brand h1 { font: 700 22px/1.1 var(--font-display); letter-spacing: -.02em; margin: 0; }
 .brand p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
 
-.tabs { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow-sm); }
-.tabs::before { content: ""; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: var(--accent); border-radius: 999px; transition: transform .35s var(--ease); }
+.tabs { position: relative; display: inline-grid; grid-template-columns: repeat(3, 1fr); padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow-sm); }
+.tabs::before { content: ""; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3); background: var(--accent); border-radius: 999px; transition: transform .35s var(--ease); }
 .tabs[data-mode="test"]::before { transform: translateX(100%); }
+.tabs[data-mode="mock"]::before { transform: translateX(200%); }
 .tabs button { position: relative; border: 0; background: transparent; color: var(--muted); padding: 8px 24px; font: 550 14px var(--font-body); border-radius: 999px; cursor: pointer; transition: color .25s; }
 .tabs button:hover { color: var(--text); }
 .tabs button.active { color: var(--accent-text); }
@@ -113,9 +114,9 @@ header.top { display: flex; flex-wrap: wrap; justify-content: space-between; ali
   .qtext { font-size: 19px; }
 }
 @media (max-width: 1023px) {
-  #test .side { display: contents; }
+  #test .side, #mockRun .side { display: contents; }
   #test .panel { margin-bottom: var(--s3); }
-  #test .tracker { margin-bottom: var(--s3); }
+  #test .tracker, #mockRun .tracker { margin-bottom: var(--s3); }
 }
 
 /* ---------- Buttons & controls ---------- */
@@ -213,6 +214,15 @@ button.opt:disabled { cursor: default; }
 .pager span { color: var(--muted); font: 500 13px var(--font-mono); }
 .submit-row { display: flex; justify-content: center; margin: var(--s5) 0 var(--s7); }
 .submit-row .btn { padding: 16px 48px; font-size: 16px; border-radius: 999px; }
+.mock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s3); }
+.mock-week { display: flex; flex-direction: column; gap: var(--s3); padding: var(--s3); }
+.mock-week h3 { font: 700 18px var(--font-display); letter-spacing: -.01em; margin: 0; }
+.mock-week .muted { margin: 0; font-size: 13px; }
+.mock-buttons { display: grid; gap: var(--s2); }
+.mock-buttons .btn { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); width: 100%; }
+.mock-buttons .best { font: 500 12px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.mock-buttons .best.done { color: var(--ok); }
+.mock-run-head { display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: flex-end; }
 .retry { position: fixed; right: var(--s3); bottom: var(--s3); z-index: var(--z-fab); border-radius: 999px; padding: 14px 24px; box-shadow: var(--shadow-lg); }
 
 /* ---------- Dialog ---------- */
@@ -252,6 +262,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
       <div class="tabs" role="tablist" data-mode="practice" id="tabs">
         <button id="tabPractice" class="active" data-mode="practice" role="tab">Practice</button>
         <button id="tabTest" data-mode="test" role="tab">Test</button>
+        <button id="tabMock" data-mode="mock" role="tab">Mock</button>
       </div>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Toggle light / dark">
         <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -342,6 +353,56 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
       </div>
     </div>
   </section>
+
+  <!-- MOCK -->
+  <section id="mock" hidden>
+    <div id="mockHome">
+      <div class="section-head">
+        <div>
+          <h2>Mock tests</h2>
+          <p class="sub">Three unique mock exams for every week. Sit a mock, submit it, and your best score is remembered on this device.</p>
+        </div>
+      </div>
+      <div class="mock-grid" id="mockGrid"></div>
+    </div>
+    <div id="mockRun" hidden>
+      <div class="section-head">
+        <div>
+          <h2 id="mockTitle">Mock</h2>
+          <p class="sub" id="mockSub"></p>
+        </div>
+        <div class="mock-run-head">
+          <button class="btn ghost" id="mockBack" type="button">&larr; All mocks</button>
+        </div>
+      </div>
+      <div class="split">
+        <aside class="side" aria-label="Mock progress and questions">
+          <div id="mockTracker" class="sticky tracker" role="status" aria-live="polite">
+            <div class="tracker-top">
+              <span class="tracker-label">Progress</span>
+              <strong id="mockCount"></strong>
+            </div>
+            <div class="progress" aria-hidden="true"><i id="mockBar"></i></div>
+          </div>
+          <div class="panel navpanel">
+            <h3>Questions</h3>
+            <div class="qnav" id="mockQNav"></div>
+            <div class="legend"><span><i class="dot"></i>Unanswered</span><span><i class="dot a"></i>Answered</span></div>
+          </div>
+        </aside>
+        <div class="main-col">
+          <div id="mockResultBar" class="sticky" hidden>
+            <strong id="mockScore"></strong>
+          </div>
+          <div id="mockList"></div>
+          <div class="submit-row">
+            <button class="btn primary" id="mockSubmit" type="button">Submit mock</button>
+            <button class="btn primary" id="mockRetry" type="button" hidden>Retry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   </main>
 </div>
 
@@ -357,6 +418,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script src="data.js"></script>
+<script src="mock_data.js?v=843f90987949"></script>
 <script>
 const $ = s => document.querySelector(s);
 const LETTERS = 'ABCDEFGH';
@@ -524,9 +586,13 @@ function setMode(mode) {
   document.querySelectorAll('.tabs button').forEach(b => { b.classList.toggle('active', b.dataset.mode === mode); b.setAttribute('aria-selected', b.dataset.mode === mode); });
   $('#practice').hidden = mode !== 'practice';
   $('#test').hidden = mode !== 'test';
-  if (mode === 'practice') renderPractice(); else renderTest();
+  $('#mock').hidden = mode !== 'mock';
+  $('#retryBtn').hidden = mode !== 'test' || !state.submitted;
+  if (mode === 'practice') renderPractice();
+  else if (mode === 'test') renderTest();
+  else renderMockHome();
   window.scrollTo(0, 0);
-  animateIn(mode === 'practice' ? '#practiceList' : '#testList');
+  animateIn(mode === 'practice' ? '#practiceList' : mode === 'test' ? '#testList' : '#mockGrid');
 }
 
 /* Staggered entrance for freshly loaded question lists (skipped if anime.js is unavailable) */
@@ -599,8 +665,147 @@ document.addEventListener('click', e => {
   } else if (action === 'filter') {
     state.filter = btn.dataset.filter;
     renderTest();
+  } else if (action === 'mock-open') {
+    openMock(btn.dataset.id);
+  } else if (action === 'mock-goto') {
+    document.getElementById('mq-' + btn.dataset.key)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (action === 'mock-pick') {
+    if (mockState.submitted) return;
+    mockState.answers[btn.dataset.key] = btn.dataset.text;
+    renderMock();
   }
 });
+
+$('#mockBack').addEventListener('click', () => { renderMockHome(); window.scrollTo(0, 0); animateIn('#mockGrid'); });
+$('#mockSubmit').addEventListener('click', submitMock);
+$('#mockRetry').addEventListener('click', () => {
+  mockState.answers = {};
+  mockState.submitted = false;
+  renderMock();
+  window.scrollTo(0, 0);
+});
+
+/* ---------- MOCK ---------- */
+// Lookup tables from MOCK_DATA (mock_data.js). Keys are "m<week>-<mock>-<n>".
+const MOCK_BY_KEY = {};
+const MOCK_SETS = {}; // "<week>-<mock>" -> { week, mock, keys }
+MOCK_DATA.forEach(w => w.mocks.forEach(m => {
+  const id = `${w.week}-${m.mock}`;
+  MOCK_SETS[id] = { week: w.week, mock: m.mock, keys: [] };
+  m.questions.forEach(q => {
+    const key = `m${id}-${q.n}`;
+    const correctOpt = q.options.find(o => o.letter === q.correct);
+    MOCK_BY_KEY[key] = { key, week: w.week, mock: m.mock, n: q.n, text: q.text, options: q.options, correctLetter: q.correct, correctText: correctOpt ? correctOpt.text : '' };
+    MOCK_SETS[id].keys.push(key);
+  });
+}));
+
+const mockState = { id: null, answers: {}, submitted: false };
+
+// Best score per mock is a per-viewer convenience, so it lives in localStorage and every access is guarded.
+function loadBest() {
+  try { return JSON.parse(localStorage.getItem('mockBest')) || {}; } catch (e) { return {}; }
+}
+function saveBest(best) {
+  try { localStorage.setItem('mockBest', JSON.stringify(best)); } catch (e) {}
+}
+
+function renderMockHome() {
+  const best = loadBest();
+  $('#mockHome').hidden = false;
+  $('#mockRun').hidden = true;
+  $('#mockGrid').innerHTML = MOCK_DATA.map(w => `<article class="card mock-week">
+      <h3>Week ${w.week}</h3>
+      <p class="muted">${w.mocks.length} mocks &middot; ${w.mocks[0] ? w.mocks[0].questions.length : 0} questions each</p>
+      <div class="mock-buttons">${w.mocks.map(m => {
+        const id = `${w.week}-${m.mock}`;
+        const b = best[id];
+        return `<button class="btn" data-action="mock-open" data-id="${id}">Mock ${m.mock}<span class="best ${b ? 'done' : ''}">${b ? `Best ${b.score} / ${b.total}` : 'Not attempted'}</span></button>`;
+      }).join('')}</div>
+    </article>`).join('');
+}
+
+function openMock(id) {
+  const set = MOCK_SETS[id];
+  mockState.id = id;
+  mockState.answers = {};
+  mockState.submitted = false;
+  $('#mockHome').hidden = true;
+  $('#mockRun').hidden = false;
+  $('#mockTitle').textContent = `Week ${set.week} · Mock ${set.mock}`;
+  $('#mockSub').textContent = `${set.keys.length} questions. Pick one answer per question, then submit.`;
+  renderMock();
+  window.scrollTo(0, 0);
+  animateIn('#mockList');
+}
+
+function mockCard(q) {
+  const chosen = mockState.answers[q.key];
+  const done = mockState.submitted;
+  const ok = done && chosen === q.correctText;
+  const mark = done ? `<span class="mark ${ok ? 'ok' : 'bad'}">${ok ? '✓ Correct' : '✗ Incorrect'}</span>` : '';
+  const opts = q.options.map(o => {
+    let cls = '';
+    if (chosen === o.text) cls += ' selected';
+    if (done) {
+      if (o.text === q.correctText) cls += ' correct';
+      else if (chosen === o.text) cls += ' wrong';
+    }
+    return `<button class="opt${cls}" data-action="mock-pick" data-key="${q.key}" data-text="${esc(o.text)}" ${done ? 'disabled' : ''}>
+      <span class="letter">${o.letter}</span><span class="otext">${esc(o.text)}</span></button>`;
+  }).join('');
+  const fix = done && !ok ? `<div class="fix">Correct answer: <strong>${q.correctLetter}</strong> &middot; ${esc(q.correctText)}</div>` : '';
+  return `<article class="card" id="mq-${q.key}">
+    <div class="q"><span class="qnum">Q${q.n}</span><div class="qtext">${esc(q.text)}</div>${mark}</div>
+    <div class="opts">${opts}</div>
+    ${fix}
+  </article>`;
+}
+
+function mockScore() {
+  const keys = MOCK_SETS[mockState.id].keys;
+  const correct = keys.filter(k => mockState.answers[k] === MOCK_BY_KEY[k].correctText).length;
+  const answered = keys.filter(k => k in mockState.answers).length;
+  return { correct, answered, total: keys.length };
+}
+
+function renderMock() {
+  const { correct, answered, total } = mockScore();
+  $('#mockList').innerHTML = MOCK_SETS[mockState.id].keys.map(k => mockCard(MOCK_BY_KEY[k])).join('');
+  $('#mockQNav').innerHTML = MOCK_SETS[mockState.id].keys.map((key, i) => {
+    const cls = mockState.submitted
+      ? (mockState.answers[key] === MOCK_BY_KEY[key].correctText ? 'ok' : 'bad')
+      : (key in mockState.answers ? 'answered' : '');
+    return `<button class="${cls}" data-action="mock-goto" data-key="${key}" aria-label="Go to question ${i + 1}">${i + 1}</button>`;
+  }).join('');
+  $('#mockTracker').hidden = mockState.submitted;
+  $('#mockCount').textContent = `${answered} / ${total} answered`;
+  $('#mockBar').style.width = `${answered / total * 100}%`;
+  $('#mockSubmit').hidden = mockState.submitted;
+  $('#mockRetry').hidden = !mockState.submitted;
+  $('#mockResultBar').hidden = !mockState.submitted;
+  if (mockState.submitted) {
+    $('#mockScore').textContent = `Score: ${correct} / ${total} (${Math.round(correct / total * 100)}%)`;
+  }
+}
+
+function submitMock() {
+  const { correct, answered, total } = mockScore();
+  mockState.submitted = true;
+  const best = loadBest();
+  const prev = best[mockState.id];
+  if (!prev || correct > prev.score) {
+    best[mockState.id] = { score: correct, total };
+    saveBest(best);
+  }
+  renderMock();
+  $('#scoreText').textContent = `${correct} / ${total}`;
+  $('#scorePct').textContent = `${Math.round(correct / total * 100)}%`;
+  $('#scoreNote').textContent = answered < total
+    ? `${total - answered} question(s) were left unanswered and count as incorrect.`
+    : 'All questions answered.';
+  $('#scoreModal').showModal();
+}
 
 /* ---------- THEME ---------- */
 const root = document.documentElement;
