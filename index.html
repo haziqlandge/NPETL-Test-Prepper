@@ -76,6 +76,7 @@ header.top { display: flex; flex-wrap: wrap; justify-content: space-between; ali
 .tabs button.active { color: var(--accent-text); }
 
 .head-actions { display: flex; align-items: center; gap: var(--s2); }
+#course { border-radius: 999px; font-weight: 600; }
 .theme-toggle { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; box-shadow: var(--shadow-sm); transition: border-color .2s, transform .15s var(--ease), background .2s; }
 .theme-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
 .theme-toggle:active { transform: scale(.94); }
@@ -252,7 +253,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
   .pager { flex-wrap: wrap; }
   .pager .btn { flex: 1; }
   .pager span { order: -1; width: 100%; text-align: center; }
-  .head-actions { width: 100%; } .tabs { flex: 1; } .tabs button { padding: 10px; }
+  .head-actions { width: 100%; flex-wrap: wrap; } #course { flex: 1; } .tabs { order: 2; flex: 1 0 100%; } .tabs button { padding: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; } }
 </style>
@@ -263,9 +264,13 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
   <header class="top">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l5 5 9-11"/></svg></div>
-      <div><h1>NOC26 CS160</h1><p>Weekly question bank</p></div>
+      <div><h1 id="courseCode">NOC26 CS160</h1><p id="courseName">Weekly question bank</p></div>
     </div>
     <div class="head-actions">
+      <select id="course" aria-label="Course">
+        <option value="iot">IoT</option>
+        <option value="ebiz">E-Business</option>
+      </select>
       <div class="tabs" role="tablist" data-mode="practice" id="tabs">
         <button id="tabPractice" class="active" data-mode="practice" role="tab">Practice</button>
         <button id="tabTest" data-mode="test" role="tab">Test</button>
@@ -371,6 +376,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
         </div>
       </div>
       <div class="mock-grid" id="mockGrid"></div>
+      <div class="empty" id="mockEmpty" hidden><b>No mock tests for this course</b>Mock tests are available for IoT only. Use Practice or Test for this course.</div>
     </div>
     <div id="mockRun" hidden>
       <div class="section-head">
@@ -426,6 +432,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script src="data.js"></script>
+<script src="ebiz_data.js"></script>
 <script src="mock_data.js?v=843f90987949"></script>
 <script>
 const $ = s => document.querySelector(s);
@@ -433,37 +440,59 @@ const LETTERS = 'ABCDEFGH';
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 
-// Build lookup tables from QNA_DATA (data.js)
-const WEEK_NUMS = QNA_DATA.map(w => w.week);
+// Each course has its own question bank (data.js, ebiz_data.js); only IoT has mock tests.
+const COURSES = {
+  iot: { code: 'NOC26 CS160', name: 'Internet of Things', data: QNA_DATA, mocks: true },
+  ebiz: { code: 'NOC26 MG134', name: 'E-Business', data: EBIZ_DATA, mocks: false }
+};
+let course = 'iot';
+let WEEK_NUMS = [];
 const WEEK_KEYS = {};
 const BY_KEY = {};
-QNA_DATA.forEach(w => {
-  WEEK_KEYS[w.week] = [];
-  w.questions.forEach(q => {
-    const key = `${w.week}-${q.n}`;
-    const correctOpt = q.options.find(o => o.letter === q.correct);
-    const original = q.options.map(o => ({ letter: o.letter, text: o.text }));
-    BY_KEY[key] = {
-      key, week: w.week, n: q.n, text: q.text,
-      original,
-      options: original.map(o => ({ ...o })),
-      correctText: correctOpt ? correctOpt.text : '',
-      correctLetter: q.correct
-    };
-    WEEK_KEYS[w.week].push(key);
-  });
-});
 
 const state = {
   mode: 'practice',
-  week: WEEK_NUMS[0],
-  picked: new Set([WEEK_NUMS[0]]),
+  week: null,
+  picked: new Set(),
   order: [],
   answers: {},
   submitted: false,
   filter: 'all',
   revealed: {}
 };
+
+// Rebuild lookup tables for the chosen course and start its practice/test state fresh.
+function loadCourse(id) {
+  course = COURSES[id] ? id : 'iot';
+  const c = COURSES[course];
+  WEEK_NUMS = c.data.map(w => w.week);
+  Object.keys(WEEK_KEYS).forEach(k => delete WEEK_KEYS[k]);
+  Object.keys(BY_KEY).forEach(k => delete BY_KEY[k]);
+  c.data.forEach(w => {
+    WEEK_KEYS[w.week] = [];
+    w.questions.forEach(q => {
+      const key = `${w.week}-${q.n}`;
+      const correctOpt = q.options.find(o => o.letter === q.correct);
+      const original = q.options.map(o => ({ letter: o.letter, text: o.text }));
+      BY_KEY[key] = {
+        key, week: w.week, n: q.n, text: q.text,
+        original,
+        options: original.map(o => ({ ...o })),
+        correctText: correctOpt ? correctOpt.text : '',
+        correctLetter: q.correct
+      };
+      WEEK_KEYS[w.week].push(key);
+    });
+  });
+  Object.assign(state, { week: WEEK_NUMS[0], picked: new Set([WEEK_NUMS[0]]), answers: {}, submitted: false, filter: 'all', revealed: {} });
+  state.order = orderFromPicks();
+  $('#course').value = course;
+  $('#courseCode').textContent = c.code;
+  $('#courseName').textContent = `${c.name} · Weekly question bank`;
+  document.title = `${c.code} Week Quiz`;
+  $('#weekJump').innerHTML = WEEK_NUMS.map(w => `<option value="${w}">Week ${w}</option>`).join('');
+  renderPicks();
+}
 
 const orderFromPicks = () => WEEK_NUMS.filter(w => state.picked.has(w)).flatMap(w => WEEK_KEYS[w]);
 const unjumbleAll = () => Object.values(BY_KEY).forEach(q => { q.options = q.original.map(o => ({ ...o })); });
@@ -473,7 +502,7 @@ const isCorrect = k => state.answers[k] === BY_KEY[k].correctText;
 function renderPractice() {
   $('#weekJump').value = state.week;
   const i = WEEK_NUMS.indexOf(state.week);
-  $('#weekLabel').textContent = `Week ${state.week} of ${WEEK_NUMS.length}`;
+  $('#weekLabel').textContent = `${i + 1} of ${WEEK_NUMS.length} weeks`;
   $('#weekTitle').textContent = `Week ${state.week}`;
   $('#weekList').innerHTML = WEEK_NUMS.map(w => `<button class="${w === state.week ? 'current' : ''}" data-action="week" data-week="${w}">${w}</button>`).join('');
   const nShown = WEEK_KEYS[state.week].filter(k => state.revealed[k]).length;
@@ -597,9 +626,13 @@ function setMode(mode) {
   $('#test').hidden = mode !== 'test';
   $('#mock').hidden = mode !== 'mock';
   $('#retryBtn').hidden = mode !== 'test' || !state.submitted;
+  const hasMocks = COURSES[course].mocks;
+  $('#mockGrid').hidden = !hasMocks;
+  $('#mockEmpty').hidden = hasMocks;
   if (mode === 'practice') renderPractice();
   else if (mode === 'test') renderTest();
-  else renderMockHome();
+  else if (hasMocks) renderMockHome();
+  else { $('#mockHome').hidden = false; $('#mockRun').hidden = true; }
   window.scrollTo(0, 0);
   animateIn(mode === 'practice' ? '#practiceList' : mode === 'test' ? '#testList' : '#mockGrid');
 }
@@ -613,7 +646,12 @@ function animateIn(sel) {
 /* ---------- EVENTS ---------- */
 document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
-$('#weekJump').innerHTML = WEEK_NUMS.map(w => `<option value="${w}">Week ${w}</option>`).join('');
+$('#course').addEventListener('change', e => {
+  loadCourse(e.target.value);
+  try { localStorage.setItem('course', course); } catch (err) {}
+  setMode(state.mode);
+});
+
 $('#weekJump').addEventListener('change', e => { state.week = Number(e.target.value); renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList'); });
 $('#prevWeek').addEventListener('click', () => { state.week = WEEK_NUMS[WEEK_NUMS.indexOf(state.week) - 1]; renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList'); });
 $('#nextWeek').addEventListener('click', () => { state.week = WEEK_NUMS[WEEK_NUMS.indexOf(state.week) + 1]; renderPractice(); window.scrollTo(0, 0); animateIn('#practiceList'); });
@@ -889,12 +927,13 @@ $('#themeToggle').addEventListener('click', () => {
 });
 
 /* ---------- INIT ---------- */
-renderPicks();
-state.order = orderFromPicks();
+let savedCourse = null;
+try { savedCourse = localStorage.getItem('course'); } catch (e) {}
+loadCourse(savedCourse);
 renderPractice();
 renderTest();
 const savedView = readMockStorage('quizView', 'practice');
-if (typeof savedView === 'string' && savedView.startsWith('mock:') && MOCK_SETS[savedView.slice(5)]) {
+if (COURSES[course].mocks && typeof savedView === 'string' && savedView.startsWith('mock:') && MOCK_SETS[savedView.slice(5)]) {
   setMode('mock');
   openMock(savedView.slice(5));
 } else if (savedView === 'mock' || savedView === 'test') {
