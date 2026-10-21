@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const source = html.slice(html.indexOf('/* ---------- MOCK ---------- */'), html.indexOf('/* ---------- THEME ---------- */'));
 const data = fs.readFileSync(path.join(root, 'mock_data.js'), 'utf8');
-function app(storage = new Map(), failWrites = false) {
+function app(storage = new Map(), failWrites = false, extra = '') {
   const elements = new Map();
   const context = vm.createContext({
     localStorage: {
@@ -22,7 +22,7 @@ function app(storage = new Map(), failWrites = false) {
     window: { scrollTo() {} },
     animateIn() {}
   });
-  vm.runInContext(data + '\n' + source, context);
+  vm.runInContext(data + '\n' + extra + '\n' + source, context);
   return { storage, elements, run: code => vm.runInContext(code, context) };
 }
 test('unfinished answers survive page reload, other mocks, and returning home', () => {
@@ -81,4 +81,18 @@ test('unavailable storage warns the user and allows answering', () => {
   a.run("openMock('1-1'); mockState.answers['m1-1-1'] = MOCK_BY_KEY['m1-1-1'].correctText; saveMockAttempt(); renderMock()");
   assert.match(a.elements.get('#mockSaveStatus').textContent, /could not save/);
   assert.equal(a.elements.get('#mockCount').textContent, '1 / 15 answered');
+});
+test('E-Business mocks keep their own ids, progress, and best scores', () => {
+  const opts = [{ letter: 'A', text: 'x' }, { letter: 'B', text: 'y' }];
+  const ebiz = 'const EBIZ_MOCK_DATA = ' + JSON.stringify([{ week: 1, mocks: [1, 2, 3].map(mock => ({ mock, questions: [{ n: 1, text: 'Q' + mock, options: opts, correct: 'B' }] })) }]) + ';';
+  let a = app(new Map(), false, ebiz);
+  a.run("openMock('1-1'); mockState.answers['m1-1-1'] = MOCK_BY_KEY['m1-1-1'].correctText; submitMock(); openMock('e1-1'); mockState.answers['me1-1-1'] = 'y'; submitMock()");
+  assert.equal(a.run("loadBest()['1-1'].total"), 15);
+  assert.equal(a.run("loadBest()['e1-1'].score"), 1);
+  a = app(a.storage, false, ebiz);
+  a.run("mockCourse = 'ebiz'; renderMockHome()");
+  const grid = a.elements.get('#mockGrid').innerHTML;
+  assert.match(grid, /data-id="e1-1"/);
+  assert.doesNotMatch(grid, /data-id="1-1"/);
+  assert.match(grid, /1 \/ 3 completed/);
 });

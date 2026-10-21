@@ -376,7 +376,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
         </div>
       </div>
       <div class="mock-grid" id="mockGrid"></div>
-      <div class="empty" id="mockEmpty" hidden><b>No mock tests for this course</b>Mock tests are available for IoT only. Use Practice or Test for this course.</div>
+      <div class="empty" id="mockEmpty" hidden><b>No mock tests for this course yet</b>Use Practice or Test for this course.</div>
     </div>
     <div id="mockRun" hidden>
       <div class="section-head">
@@ -434,16 +434,17 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
 <script src="data.js"></script>
 <script src="ebiz_data.js"></script>
 <script src="mock_data.js?v=843f90987949"></script>
+<script src="ebiz_mock_data.js"></script>
 <script>
 const $ = s => document.querySelector(s);
 const LETTERS = 'ABCDEFGH';
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 
-// Each course has its own question bank (data.js, ebiz_data.js); only IoT has mock tests.
+// Each course has its own question bank (data.js, ebiz_data.js) and mock tests (mock_data.js, ebiz_mock_data.js).
 const COURSES = {
   iot: { code: 'NOC26 CS160', name: 'Internet of Things', data: QNA_DATA, mocks: true },
-  ebiz: { code: 'NOC26 MG134', name: 'E-Business', data: EBIZ_DATA, mocks: false }
+  ebiz: { code: 'NOC26 MG134', name: 'E-Business', data: EBIZ_DATA, mocks: EBIZ_MOCK_DATA.length > 0 }
 };
 let course = 'iot';
 let WEEK_NUMS = [];
@@ -486,6 +487,7 @@ function loadCourse(id) {
   });
   Object.assign(state, { week: WEEK_NUMS[0], picked: new Set([WEEK_NUMS[0]]), answers: {}, submitted: false, filter: 'all', revealed: {} });
   state.order = orderFromPicks();
+  mockCourse = course;
   $('#course').value = course;
   $('#courseCode').textContent = c.code;
   $('#courseName').textContent = `${c.name} · Weekly question bank`;
@@ -735,19 +737,25 @@ $('#mockRetry').addEventListener('click', () => {
 });
 
 /* ---------- MOCK ---------- */
-// Lookup tables from MOCK_DATA (mock_data.js). Keys are "m<week>-<mock>-<n>".
+// Lookup tables from MOCK_DATA (mock_data.js) and EBIZ_MOCK_DATA (ebiz_mock_data.js).
+// Set ids are "<week>-<mock>" for IoT and "e<week>-<mock>" for E-Business; keys are "m<id>-<n>".
+const MOCK_COURSES = {
+  iot: { prefix: '', data: MOCK_DATA },
+  ebiz: { prefix: 'e', data: typeof EBIZ_MOCK_DATA === 'undefined' ? [] : EBIZ_MOCK_DATA }
+};
+let mockCourse = 'iot';
 const MOCK_BY_KEY = {};
-const MOCK_SETS = {}; // "<week>-<mock>" -> { week, mock, keys }
-MOCK_DATA.forEach(w => w.mocks.forEach(m => {
-  const id = `${w.week}-${m.mock}`;
-  MOCK_SETS[id] = { week: w.week, mock: m.mock, keys: [] };
+const MOCK_SETS = {}; // id -> { course, week, mock, keys }
+Object.entries(MOCK_COURSES).forEach(([c, { prefix, data }]) => data.forEach(w => w.mocks.forEach(m => {
+  const id = `${prefix}${w.week}-${m.mock}`;
+  MOCK_SETS[id] = { course: c, week: w.week, mock: m.mock, keys: [] };
   m.questions.forEach(q => {
     const key = `m${id}-${q.n}`;
     const correctOpt = q.options.find(o => o.letter === q.correct);
     MOCK_BY_KEY[key] = { key, week: w.week, mock: m.mock, n: q.n, text: q.text, options: q.options, correctLetter: q.correct, correctText: correctOpt ? correctOpt.text : '' };
     MOCK_SETS[id].keys.push(key);
   });
-}));
+})));
 
 const mockState = { id: null, answers: {}, submitted: false };
 
@@ -798,17 +806,18 @@ function renderMockHome() {
   saveMockView('mock');
   $('#mockHome').hidden = false;
   $('#mockRun').hidden = true;
-  $('#mockGrid').innerHTML = MOCK_DATA.map(w => {
-    const completed = w.mocks.filter(m => best[`${w.week}-${m.mock}`]).length;
+  const { prefix, data } = MOCK_COURSES[mockCourse];
+  $('#mockGrid').innerHTML = data.map(w => {
+    const completed = w.mocks.filter(m => best[`${prefix}${w.week}-${m.mock}`]).length;
     const perfect = w.mocks.every(m => {
-      const b = best[`${w.week}-${m.mock}`];
+      const b = best[`${prefix}${w.week}-${m.mock}`];
       return b && b.score === b.total;
     });
     return `<article class="card mock-week${completed ? ' completed' : ''}${perfect ? ' perfect' : ''}">
       <h3>Week ${w.week}${perfect ? ' · Full marks' : ''}</h3>
       <p class="muted">${completed} / ${w.mocks.length} completed &middot; ${w.mocks[0]?.questions.length || 0} questions each</p>
       <div class="mock-buttons">${w.mocks.map(m => {
-        const id = `${w.week}-${m.mock}`;
+        const id = `${prefix}${w.week}-${m.mock}`;
         const b = best[id];
         const attempt = loadMockAttempt(id);
         const answered = Object.keys(attempt.answers).length;
@@ -933,7 +942,7 @@ loadCourse(savedCourse);
 renderPractice();
 renderTest();
 const savedView = readMockStorage('quizView', 'practice');
-if (COURSES[course].mocks && typeof savedView === 'string' && savedView.startsWith('mock:') && MOCK_SETS[savedView.slice(5)]) {
+if (typeof savedView === 'string' && savedView.startsWith('mock:') && MOCK_SETS[savedView.slice(5)]?.course === course) {
   setMode('mock');
   openMock(savedView.slice(5));
 } else if (savedView === 'mock' || savedView === 'test') {
