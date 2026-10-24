@@ -77,6 +77,7 @@ header.top { display: flex; flex-wrap: wrap; justify-content: space-between; ali
 
 .head-actions { display: flex; align-items: center; gap: var(--s2); }
 #course { border-radius: 999px; font-weight: 600; }
+a.btn { display: inline-flex; align-items: center; text-decoration: none; border-radius: 999px; white-space: nowrap; }
 .theme-toggle { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; box-shadow: var(--shadow-sm); transition: border-color .2s, transform .15s var(--ease), background .2s; }
 .theme-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
 .theme-toggle:active { transform: scale(.94); }
@@ -271,6 +272,7 @@ dialog .row { justify-content: center; margin-top: var(--s4); }
         <option value="iot">IoT</option>
         <option value="ebiz">E-Business</option>
       </select>
+      <a class="btn guide-link" id="guideLink" href="guide/" hidden>Study guide</a>
       <div class="tabs" role="tablist" data-mode="practice" id="tabs">
         <button id="tabPractice" class="active" data-mode="practice" role="tab">Practice</button>
         <button id="tabTest" data-mode="test" role="tab">Test</button>
@@ -489,6 +491,7 @@ function loadCourse(id) {
   state.order = orderFromPicks();
   mockCourse = course;
   $('#course').value = course;
+  $('#guideLink').hidden = course !== 'ebiz'; // the study guide covers E-Business only
   $('#courseCode').textContent = c.code;
   $('#courseName').textContent = `${c.name} · Weekly question bank`;
   document.title = `${c.code} Week Quiz`;

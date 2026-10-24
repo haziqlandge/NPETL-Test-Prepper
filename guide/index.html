@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Business Study Guide</title>
+<meta name="description" content="Look-alike terms, must-remember facts and exam trigger words for every week of the NOC26 MG134 E-Business course.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%233d55c9'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..650&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ---------- Design tokens (same as the quiz site) ---------- */
+:root {
+  --bg: #f6f4f0; --surface: #ffffff; --surface-2: #faf8f5; --text: #1c1b19; --muted: #6f6b64; --line: #e6e2db; --line-strong: #d3cec5;
+  --accent: #3d55c9; --accent-hover: #3248b3; --accent-soft: #eaedfa; --accent-text: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(60,48,30,.06);
+  --shadow-md: 0 1px 2px rgba(60,48,30,.05), 0 8px 24px -8px rgba(60,48,30,.12);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 20px;
+  --s1: 4px; --s2: 8px; --s3: 16px; --s4: 24px; --s5: 32px; --s6: 48px;
+  --ease: cubic-bezier(.22,.8,.3,1);
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131211; --surface: #1c1b19; --surface-2: #232220; --text: #eeebe5; --muted: #a09b92; --line: #2e2c29; --line-strong: #403d39;
+    --accent: #8197f5; --accent-hover: #97a9f8; --accent-soft: #232842; --accent-text: #10131f;
+    --shadow-sm: none; --shadow-md: 0 8px 24px -8px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131211; --surface: #1c1b19; --surface-2: #232220; --text: #eeebe5; --muted: #a09b92; --line: #2e2c29; --line-strong: #403d39;
+  --accent: #8197f5; --accent-hover: #97a9f8; --accent-soft: #232842; --accent-text: #10131f;
+  --shadow-sm: none; --shadow-md: 0 8px 24px -8px rgba(0,0,0,.5);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text); overflow-x: hidden;
+  font: 400 16px/1.6 var(--font-body); -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(900px 420px at 50% -120px, var(--accent-soft), transparent 70%);
+  background-repeat: no-repeat;
+}
+.wrap { max-width: 1160px; margin: 0 auto; padding: var(--s4) var(--s3) var(--s6); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+.skip { position: absolute; left: var(--s3); top: -48px; background: var(--accent); color: var(--accent-text); padding: var(--s2) var(--s3); border-radius: var(--r-sm); z-index: 100; transition: top .2s; }
+.skip:focus { top: var(--s3); }
+
+/* ---------- Header ---------- */
+header.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s3); padding: var(--s3) 0 var(--s4); }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-mark { flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; box-shadow: var(--shadow-md); }
+.brand-mark svg { width: 22px; height: 22px; }
+.brand h1 { font: 700 22px/1.1 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.brand p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.head-actions { display: flex; align-items: center; gap: var(--s2); }
+.theme-toggle { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; box-shadow: var(--shadow-sm); transition: border-color .2s, transform .15s var(--ease), background .2s; }
+.theme-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+.theme-toggle:active { transform: scale(.94); }
+.theme-toggle svg { width: 20px; height: 20px; }
+.theme-toggle .i-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+
+/* ---------- Buttons & controls ---------- */
+.btn, select, .gsearch {
+  font: 550 14px/1 var(--font-body); color: var(--text); background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 12px 16px; min-height: 44px; cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s var(--ease), box-shadow .2s;
+  box-shadow: var(--shadow-sm);
+}
+a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+.btn:hover:not(:disabled), select:hover { border-color: var(--accent); background: var(--surface-2); }
+.btn:active:not(:disabled) { transform: translateY(1px) scale(.98); }
+.btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+select { appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236f6b64' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+.chip { font: 550 13px var(--font-body); border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px; min-height: 36px; background: var(--surface); color: var(--text); cursor: pointer; transition: all .2s; font-variant-numeric: tabular-nums; }
+.chip:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+/* ---------- Week picker ---------- */
+.section-head { margin-bottom: var(--s3); }
+.section-head h2 { font: 700 clamp(28px, 5vw, 40px)/1.05 var(--font-display); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
+.section-head .sub { margin: var(--s2) 0 0; color: var(--muted); font-size: 15px; max-width: 60ch; }
+.gtools { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s3); }
+.gtools select { min-width: 0; flex: 1 1 auto; }
+.gtools .btn { flex: 0 0 auto; }
+.gweeks { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; margin-bottom: var(--s3); }
+.gweeks button { font: 550 14px var(--font-body); padding: 10px 0; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); cursor: pointer; transition: all .2s; font-variant-numeric: tabular-nums; }
+.gweeks button:hover { border-color: var(--accent); }
+.gweeks button.current { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.gsearch { display: block; width: 100%; cursor: text; font-weight: 450; }
+.gjump { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s3); }
+
+/* ---------- Sections ---------- */
+.gsec { margin-top: var(--s5); scroll-margin-top: var(--s3); min-width: 0; }
+.gsec > h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font: 700 clamp(22px, 4vw, 28px)/1.15 var(--font-display); letter-spacing: -.02em; margin: 0 0 var(--s1); }
+.gsec > h3 small { font: 500 13px var(--font-mono); color: var(--muted); letter-spacing: 0; }
+.gsec > .gnote { margin: 0 0 var(--s3); color: var(--muted); font-size: 14.5px; }
+.gsec h4 { font: 600 12px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: var(--s4) 0 var(--s2); overflow-wrap: anywhere; }
+.gtable { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.gtable th { text-align: left; font: 600 11.5px var(--font-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); padding: 12px 16px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.gtable td { padding: 12px 16px; vertical-align: top; font-size: 15px; line-height: 1.5; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.gtable tbody tr:first-child td { border-top: 0; }
+.gtable tbody tr:hover td { background: var(--surface-2); }
+.gtable td:first-child { font-weight: 600; }
+.gtable.c3 th:nth-child(1), .gtable.c3 td:nth-child(1) { width: 27%; }
+.gtable.c3 th:nth-child(2), .gtable.c3 td:nth-child(2) { width: 43%; }
+.gtable.c2 th:first-child, .gtable.c2 td:first-child { width: 34%; }
+.gtable code, .grule code { font: 500 .88em var(--font-mono); background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+.gtie { display: inline-block; max-width: 100%; background: var(--accent-soft); color: var(--accent); border-radius: var(--r-sm); padding: 2px 8px; font-weight: 550; }
+
+.grules { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.grule { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 16px; box-shadow: var(--shadow-sm); }
+.grule .gnum { font: 600 13px/1 var(--font-mono); color: var(--accent); background: var(--accent-soft); padding: 8px 10px; border-radius: 10px; }
+.grule .gif { display: block; color: var(--muted); font-size: 14.5px; overflow-wrap: anywhere; }
+.grule .gthen { display: block; margin-top: 4px; padding-left: 12px; border-left: 3px solid var(--accent); font-weight: 550; overflow-wrap: anywhere; }
+.gpatterns { margin: 0; padding-left: 20px; display: grid; gap: var(--s2); }
+.gpatterns li { overflow-wrap: anywhere; }
+.empty { color: var(--muted); text-align: center; padding: var(--s6) var(--s4); border: 1.5px dashed var(--line-strong); border-radius: var(--r-lg); background: var(--surface-2); margin-top: var(--s4); }
+.empty b { display: block; font: 700 20px var(--font-display); color: var(--text); margin-bottom: 4px; }
+
+.pager { display: flex; justify-content: space-between; gap: var(--s2); margin: var(--s5) 0 0; }
+
+/* ---------- Phones and narrow screens: tables become stacked cards, nothing scrolls sideways ---------- */
+@media (max-width: 720px) {
+  .gweeks { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .gtable, .gtable tbody, .gtable tr, .gtable td { display: block; width: 100%; }
+  .gtable { background: transparent; border: 0; box-shadow: none; border-radius: 0; overflow: visible; }
+  .gtable thead { display: none; }
+  .gtable tbody { display: grid; gap: var(--s2); }
+  .gtable tr { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 16px; box-shadow: var(--shadow-sm); }
+  .gtable td, .gtable tbody tr:first-child td { border: 0; padding: 4px 0; width: 100% !important; }
+  .gtable tbody tr:hover td { background: transparent; }
+  .gtable td::before { content: attr(data-label); display: block; font: 600 11px var(--font-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .gtable td:first-child { font: 650 16px/1.35 var(--font-body); padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+  .gtable td:first-child::before { display: none; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: var(--s3) 16px var(--s6); }
+  .grule { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .grule .gnum { justify-self: start; }
+  .head-actions { gap: 6px; }
+  .gtools .btn { padding: 12px; }
+  .gtools select { padding-left: 12px; padding-right: 32px; background-position: right 12px center; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l5 5 9-11"/></svg></div>
+      <div><h1>NOC26 MG134</h1><p>E-Business &middot; Study guide</p></div>
+    </div>
+    <div class="head-actions">
+      <a class="btn" href="../">&larr; Quiz</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Toggle light / dark">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="section-head">
+      <h2 id="guideTitle">Week 1</h2>
+      <p class="sub" id="guideSub"></p>
+    </div>
+    <div class="gtools">
+      <button class="btn" id="guidePrev" type="button" aria-label="Previous week">&larr; Prev</button>
+      <select id="guideJump" aria-label="Jump to week"></select>
+      <button class="btn" id="guideNext" type="button" aria-label="Next week">Next &rarr;</button>
+    </div>
+    <div class="gweeks" id="guideWeeks" role="group" aria-label="Weeks"></div>
+    <input class="gsearch" id="guideSearch" type="search" placeholder="Filter this week, e.g. broker, 1999, Kotler" aria-label="Filter this week" autocomplete="off">
+    <div class="gjump" id="guideJumpBtns"></div>
+    <div id="guideBody"></div>
+    <div class="pager">
+      <button class="btn" id="guidePrev2" type="button">&larr; Previous week</button>
+      <button class="btn" id="guideNext2" type="button">Next week &rarr;</button>
+    </div>
+  </main>
+</div>
+
+<script src="../ebiz_guide_data.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Only `code` and **bold** from the markdown source are kept; everything else is escaped text.
+const md = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+// Built from ebiz_guide/week-NN.md by build_guide.py: "Don't mix these up", must-remember facts, "If the question says" rules.
+const GUIDE = EBIZ_GUIDE_DATA;
+const state = { week: GUIDE[0].week, q: '' };
+
+function table(t, tie) {
+  const q = state.q;
+  const rows = q ? t.rows.filter(r => r.join(' ').toLowerCase().includes(q)) : t.rows;
+  if (!rows.length) return { n: 0, html: '' };
+  const cls = t.head.length === 3 ? 'c3' : t.head.length === 2 ? 'c2' : '';
+  const head = t.head.map(h => `<th scope="col">${md(h)}</th>`).join('');
+  const body = rows.map(r => `<tr>${r.map((c, i) => `<td data-label="${esc(t.head[i])}">${tie && i === r.length - 1 ? `<span class="gtie">${md(c)}</span>` : md(c)}</td>`).join('')}</tr>`).join('');
+  return { n: rows.length, html: `<table class="gtable ${cls}"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>` };
+}
+
+function rule(text, i) {
+  const k = text.indexOf(' → ');
+  const body = k < 0 ? `<span class="gif">${md(text)}</span>` : `<span class="gif">${md(text.slice(0, k))}</span><span class="gthen">→ ${md(text.slice(k + 3))}</span>`;
+  return `<li class="grule"><span class="gnum">${i + 1}</span><div>${body}</div></li>`;
+}
+
+const section = (id, title, count, note, inner) =>
+  `<section class="gsec" id="g-${id}"><h3>${title} <small>${count}</small></h3>${note ? `<p class="gnote">${note}</p>` : ''}${inner}</section>`;
+
+function render() {
+  const g = GUIDE.find(x => x.week === state.week) || GUIDE[0];
+  const i = GUIDE.indexOf(g);
+  const q = state.q;
+  $('#guideTitle').textContent = `Week ${g.week}`;
+  $('#guideSub').textContent = g.title;
+  document.title = `Week ${g.week} · E-Business Study Guide`;
+  $('#guideJump').innerHTML = GUIDE.map(x => `<option value="${x.week}" ${x.week === g.week ? 'selected' : ''}>Week ${x.week}</option>`).join('');
+  $('#guideWeeks').innerHTML = GUIDE.map(x => `<button type="button" class="${x.week === g.week ? 'current' : ''}" data-week="${x.week}" aria-label="Week ${x.week}" ${x.week === g.week ? 'aria-current="true"' : ''}>${x.week}</button>`).join('');
+  [$('#guidePrev'), $('#guidePrev2')].forEach(b => b.disabled = i === 0);
+  [$('#guideNext'), $('#guideNext2')].forEach(b => b.disabled = i === GUIDE.length - 1);
+
+  const mix = table(g.mix, true);
+  const main = table(g.facts, false);
+  const extras = (g.facts.extra || []).map(t => ({ title: t.title, ...table(t, false) })).filter(t => t.n);
+  const factN = main.n + extras.reduce((a, t) => a + t.n, 0);
+  const list = (g.rules || g.patterns).map((r, j) => [r, j]).filter(([r]) => !q || r.toLowerCase().includes(q));
+
+  const secs = [
+    { id: 'mix', label: "Don't mix up", n: mix.n, html: mix.n && section('mix', "Don't mix these up", mix.n, 'Look-alike terms, how to tell them apart, and the one word that decides it.', mix.html) },
+    { id: 'facts', label: 'Must remember', n: factN, html: factN && section('facts', 'Must-remember facts', factN, '', main.html + extras.map(t => `<h4>${md(t.title)}</h4>${t.html}`).join('')) },
+    g.rules
+      ? { id: 'rules', label: 'If the question says', n: list.length, html: list.length && section('rules', 'If the question says…', list.length, 'Spot the trigger words in the question, then pick the matching answer.', `<ol class="grules">${list.map(([r, j]) => rule(r, j)).join('')}</ol>`) }
+      : { id: 'rules', label: 'How it is asked', n: list.length, html: list.length && section('rules', 'How this week is asked', list.length, 'This week has no “if the question says” list, so these are its question patterns.', `<ul class="gpatterns">${list.map(([r]) => `<li>${md(r)}</li>`).join('')}</ul>`) }
+  ];
+  $('#guideJumpBtns').innerHTML = secs.filter(s => s.n).map(s => `<button type="button" class="chip" data-jump="${s.id}">${s.label} (${s.n})</button>`).join('');
+  $('#guideBody').innerHTML = secs.some(s => s.n)
+    ? secs.map(s => s.html || '').join('')
+    : `<div class="empty"><b>No matches</b>Nothing in Week ${g.week} matches “${esc(q)}”.</div>`;
+}
+
+function setWeek(w, scroll) {
+  if (!GUIDE.some(x => x.week === w)) return;
+  state.week = w;
+  render();
+  try { localStorage.setItem('guideWeek', w); } catch (e) {}
+  history.replaceState(null, '', '#w' + w);
+  if (scroll) window.scrollTo(0, 0);
+}
+
+$('#guideWeeks').addEventListener('click', e => { const b = e.target.closest('[data-week]'); if (b) setWeek(Number(b.dataset.week), true); });
+$('#guideJump').addEventListener('change', e => setWeek(Number(e.target.value), true));
+['#guidePrev', '#guidePrev2'].forEach(s => $(s).addEventListener('click', () => setWeek(state.week - 1, true)));
+['#guideNext', '#guideNext2'].forEach(s => $(s).addEventListener('click', () => setWeek(state.week + 1, true)));
+$('#guideSearch').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+$('#guideJumpBtns').addEventListener('click', e => { const b = e.target.closest('[data-jump]'); if (b) $('#g-' + b.dataset.jump)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+
+/* ---------- Theme (shares the quiz site's saved choice) ---------- */
+const root = document.documentElement;
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(t) {
+  root.dataset.theme = t;
+  $('#themeToggle').setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+}
+let savedTheme = null;
+try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+applyTheme(savedTheme || (systemDark.matches ? 'dark' : 'light'));
+$('#themeToggle').addEventListener('click', () => {
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('theme', next); } catch (e) {}
+});
+
+/* ---------- Init: #w5 in the link wins, then the last week read ---------- */
+let start = GUIDE[0].week;
+const hash = /^#w(\d+)$/.exec(location.hash);
+try { start = Number(hash ? hash[1] : localStorage.getItem('guideWeek')) || start; } catch (e) { if (hash) start = Number(hash[1]); }
+state.week = GUIDE.some(x => x.week === start) ? start : GUIDE[0].week;
+render();
+</script>
+</body>
+</html>
